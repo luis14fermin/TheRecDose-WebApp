@@ -1,20 +1,19 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import helmet from 'helmet';
-import RateLimit from 'express-rate-limit';
-import {MongoClient} from 'mongodb';
-import {check,validationResult, oneOf} from 'express-validator';
-import { authenticated } from './security';
-import { customAlphabet } from 'nanoid';
+const express = require('express');
+const bodyParser = require('body-parser');
+const helmet = require('helmet');
+const RateLimit = require('express-rate-limit');
+const {MongoClient} = require('mongodb');
+const {check,validationResult, oneOf} = require('express-validator');
+const { authenticated } = require('./security');
+const { customAlphabet } = require('nanoid');
 require("dotenv").config();
-import Stripe from 'stripe';
-import cors from 'cors';
-import aws from 'aws-sdk';
-import fs from 'fs';
-import fileType from 'file-type';
-import multiparty from 'multiparty';
-import path from 'path';
-
+const Stripe = require('stripe');
+const cors = require('cors');
+const aws = require('aws-sdk');
+const fs = require('fs');
+const fileType = require('file-type');
+const multiparty = require('multiparty');
+const path = require('path');
 const Buffer = require('buffer/').Buffer
 
 const app = express();
