@@ -505,13 +505,12 @@ app.get('/api/menu/getMenuItem', limiter, async (req,res) => {
         const menu = await db.collection('menu').find({}).toArray();
 
         try {
-            const promisesOfS3Objects = await menu.map(function(item) {
+            const promisesOfS3Objects = menu.map(function(item) {
                 if(item.imageKey !== undefined){
                     return s3.getSignedUrlPromise('getObject',{
                         Bucket: process.env.BUCKET_NAME,
                         Key: item.imageKey
-                    })
-                        .then(function (file) {
+                    }).then(function (file) {
                             item.url = file;
                             return item
                     })
@@ -520,13 +519,15 @@ app.get('/api/menu/getMenuItem', limiter, async (req,res) => {
                 }
             })
 
-            Promise.all(promisesOfS3Objects)
-            .then(function(array) { 
-                res.status(200).json(array);
-            })
+            const array = await Promise
+            .all(promisesOfS3Objects)
             .catch(function(error) { 
                 res.status(500).json({ errors: {msg: "There was an error fetching the menu images"} });
             })
+
+            res.status(200).json(array);
+            
+            
         }catch(err){
             res.status(500).json({ errors: {msg: "There was an error fetching the menu"} })
         }
@@ -687,7 +688,10 @@ app.get('/api/recipes/:recipeName', async (req,res) => {
     withDB(async (db) => {
         const name = req.params.recipeName;
         const recipe = await db.collection('recipes').find({recipeName: name}).toArray();
-        if(recipe[0].imageKey !== undefined){
+
+        if (recipe.length === 0){
+            res.status(200).json([{pageNotFound: true}]);
+        }else if(recipe[0].imageKey !== undefined){
             var params = { Bucket: process.env.BUCKET_NAME, Key: recipe[0].imageKey };
             await s3.getSignedUrl('getObject',params, function(err, data) {
                 if (err) {
