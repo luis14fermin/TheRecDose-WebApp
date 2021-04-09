@@ -788,7 +788,7 @@ app.delete('/api/manage/delRecipe/:id', authenticated, async (req,res) => {
 });
 
 //contactUs
-app.get('/api/manage/getContact', authenticated, async (req,res) => {
+app.get('/api/manage/getContact', /*authenticated,*/ async (req,res) => {
     withDB(async (db) => {
         const updatedContact = await db.collection('contact').find({}).toArray();
         res.status(200).json(updatedContact);
